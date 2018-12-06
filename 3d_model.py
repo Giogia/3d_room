@@ -33,9 +33,10 @@ def get_coordinates(vertices,face):
     x1 = vertices[face[0], 0] - vertices[face[1], 0]
     y1 = vertices[face[0], 1] - vertices[face[1], 1]
     z1 = vertices[face[0], 2] - vertices[face[1], 2]
-    x2 = vertices[face[1], 0] - vertices[face[2], 0]
-    y2 = vertices[face[1], 1] - vertices[face[2], 1]
-    z2 = vertices[face[1], 2] - vertices[face[2], 2]
+
+    x2 = vertices[face[3], 0] - vertices[face[0], 0]
+    y2 = vertices[face[3], 1] - vertices[face[0], 1]
+    z2 = vertices[face[3], 2] - vertices[face[0], 2]
 
     return x1,y1,z1,x2,y2,z2
 
@@ -101,11 +102,12 @@ def get_faces(vertices):
             ceiling.append(i+1)
 
     faces.append(floor)
-    faces.append(ceiling)
 
     for i in floor:
 
-        faces.append((floor[i-1],floor[i],ceiling[i-1],ceiling[i]))
+        faces.append((floor[i-1],floor[i],ceiling[i],ceiling[i-1]))
+
+    #faces.append(ceiling)
 
     return faces
 
@@ -114,12 +116,32 @@ def wall_orientation(wall, vertices, face):
 
     x1, y1, z1, x2, y2, z2 = get_coordinates(vertices, face)
 
+    #cannot distinguish floor from ceiling, floor is transformed here
+    if face[0] == 0 and face[2] == 2:
+        print("floor")
+        wall.rotate([1,0,0], math.radians(90))
 
+        translate(wall, -vertices[face[1], 0], 'x')
+        translate(wall, -vertices[face[1], 1], 'z')
+        translate(wall, vertices[face[1], 2], 'y')
+
+    else:
+        wall.rotate([0.0, -np.sign(y1), 0.0], math.radians(90))
+        wall.rotate([0.0, np.sign(x1)-1, 0.0], math.radians(180))
+        wall.rotate([np.sign(x2)+np.sign(y2),0.0, 0.0], math.radians(90))
+
+        translate(wall, -vertices[face[0],0], 'x')
+        translate(wall, -vertices[face[0],1], 'z')
+        translate(wall, vertices[face[0],2], 'y')
+
+    print(vertices[face[1],0])
+    print(vertices[face[1],1])
+    print(vertices[face[1],2])
 
     return wall
 
-for i, face in enumerate(get_faces(vertices)):
-    print(get_fov(vertices,get_faces(vertices)[i]))
+#for i, face in enumerate(get_faces(vertices)):
+   # print(get_fov(vertices,get_faces(vertices)[i]))
 
 #img = Image.open('assets/pano.png')
 
@@ -139,14 +161,26 @@ for i, face in enumerate(get_faces(vertices)):
 
         #translate(wall, , 'y')
 
-    #room = mesh.Mesh(np.concatenate([room.data] + [wall.data]))
+    #
 
     #return room
 
 
-#wall = mesh.Mesh.from_file('assets/room2.stl')
+wall = mesh.Mesh.from_file('assets/room2.stl')
 
-#wall.save('assets/2walls.stl')
+room = mesh.Mesh(np.zeros(100, dtype=mesh.Mesh.dtype))
+
+for i in range(5):
+
+    face = get_faces(vertices)[i]
+
+    print(face)
+
+    twall = mesh.Mesh(wall.data.copy())
+    twall = wall_orientation(twall, vertices, face)
+    room = mesh.Mesh(np.concatenate([room.data] + [twall.data]))
+
+room.save('assets/2walls.stl')
 
 
 
