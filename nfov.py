@@ -45,7 +45,7 @@ class NFOV():
         uf = np.mod(screen_coord.T[0],1) * self.frame_width  # long - width
         vf = np.mod(screen_coord.T[1],1) * self.frame_height  # lat - height
 
-        x0 = np.floor(uf).astype(int)  # coord of pixel to bottom left
+        x0 = np.floor(uf).astype(int) # coord of pixel to bottom left
         y0 = np.floor(vf).astype(int)
         x2 = np.add(x0, np.ones(uf.shape).astype(int))  # coords of pixel to top right
         y2 = np.add(y0, np.ones(vf.shape).astype(int))
@@ -95,7 +95,7 @@ def perspective_view(img, fov, height, width):
 
     img = np.array(img)
     nfov = NFOV(fov, height, width)
-    center_point = np.array([0.5, 0.5])
+    center_point = np.array([0.25, 0.48])
     img = nfov.toNFOV(img, center_point)
 
     return img
@@ -105,11 +105,11 @@ def perspective_view(img, fov, height, width):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('assets/pano.png')
+    img = Image.open('assets/example.png')
 
-    fov = [0.16, 0.3]
-    height = 800
-    width = 800
+    fov = [0.9, 0.9]
+    height = 512
+    width = 1024
     img = perspective_view(img, fov, height, width)
 
     plt.imshow(img)

@@ -6,7 +6,7 @@ from nfov import *
 
 
 vertices = np.array([\
-    [-76, -76, -56],
+    [-1, -1, -1],
     [+76, -76, -56],
     [+76, +76, -56],
     [-76, +76, -56],
@@ -27,6 +27,8 @@ def translate(_solid, step, axis):
         raise RuntimeError('Unknown axis %r, expected x, y or z' % axis)
 
     _solid.points[:, items] += step
+
+
 
 def get_coordinates(vertices,face):
 

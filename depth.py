@@ -1,6 +1,7 @@
 import torch
 import torch.nn.parallel
 from PIL import Image
+import numpy as np
 
 import network
 from model import Model, E_senet
@@ -30,6 +31,9 @@ def depth(img):
         tensor = torch.autograd.Variable(tensor)  # , volatile=True).cuda()
         depth = model(tensor)
 
+        depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
+        depth = (depth * 255 / np.max(depth)).astype('uint8')
+        depth = Image.fromarray(depth).resize((1000,500), Image.NEAREST)
 
     return depth
 
@@ -39,6 +43,6 @@ if __name__ == '__main__':
 
     img = Image.open('assets/room.jpg')
     depth = depth(img)
-    matplotlib.image.imsave('assets/room3.jpg', depth.view(depth.size(2),depth.size(3)).data.cpu().numpy())
+    depth.save('assets/room3.jpg')
 
 

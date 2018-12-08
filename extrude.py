@@ -21,8 +21,8 @@ def extrude(img, depth, blur=None):
 
             pixel = ((pixel - min) / (max - min)) * depth
 
-            if pixel > 0.35*depth:
-                pixel = pixel - 0.35*depth
+            if pixel > 0.30*depth:
+                pixel = pixel - 0.30*depth + 1
             else:
                 pixel = 0
 
@@ -69,8 +69,8 @@ def extrude(img, depth, blur=None):
 def preprocess(img, blur = None):
 
     img = cv2.bitwise_not(img)
-    img = cv2.flip(img,0)
-    gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    gray_img = cv2.flip(img,0)
+    #gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
     if blur:
         img = cv2.blur(gray_img, blur)
@@ -81,8 +81,8 @@ def preprocess(img, blur = None):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('assets/room2.jpg')
+    img = Image.open('assets/room3.jpg')
 
-    mesh = extrude( img, 100, (2, 2))
+    mesh = extrude( img, 700, (2, 2))
 
-    mesh.save('assets/room2.stl')
+    mesh.save('assets/room3.stl')
