@@ -91,7 +91,7 @@ class NFOV():
         return self._bilinear_interpolation(sphericalCoord)
 
 
-def perspective_view(img, fov, height, width, look_point, center_point):
+def perspective_view(img, fov, width, height, look_point, center_point):
 
     img = np.array(img)
     nfov = NFOV(fov, height, width)

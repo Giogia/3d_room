@@ -1,19 +1,22 @@
 from stl import mesh
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 from PIL import Image
 from nfov import *
 
+def translate(_solid, step, axis):
+    if 'x' == axis:
+        items = 0, 3, 6
+    elif 'y' == axis:
+        items = 1, 4, 7
+    elif 'z' == axis:
+        items = 2, 5, 8
+    else:
+        raise RuntimeError('Unknown axis %r, expected x, y or z' % axis)
 
-#vertices = np.array([
-   # [-1, -1, -1],
-  #  [+76, -76, -56],
-  #  [+76, +76, -56],
-   # [-76, +76, -56],
-   # [-76, -76, 56],
-   # [+76, -76, 56],
-  #  [+76, +76, 56],
-  #  [-76, +76, 56]])
+    _solid.points[:, items] += step
+
 
 def get_vertices(file):
 
@@ -36,61 +39,6 @@ def get_vertices(file):
             vertice[i] = vertice[i] / vertices[-1][2]
 
     return np.array(vertices)
-
-
-def translate(_solid, step, axis):
-    if 'x' == axis:
-        items = 0, 3, 6
-    elif 'y' == axis:
-        items = 1, 4, 7
-    elif 'z' == axis:
-        items = 2, 5, 8
-    else:
-        raise RuntimeError('Unknown axis %r, expected x, y or z' % axis)
-
-    _solid.points[:, items] += step
-
-
-
-def get_coordinates(vertices,face):
-
-    x1 = vertices[face[0], 0] - vertices[face[1], 0]
-    y1 = vertices[face[0], 1] - vertices[face[1], 1]
-    z1 = vertices[face[0], 2] - vertices[face[1], 2]
-
-    x2 = vertices[face[3], 0] - vertices[face[0], 0]
-    y2 = vertices[face[3], 1] - vertices[face[0], 1]
-    z2 = vertices[face[3], 2] - vertices[face[0], 2]
-
-    return x1,y1,z1,x2,y2,z2
-
-
-def get_face(vertices,face):
-
-    vectors = []
-    for i in face:
-        vector = []
-        for coordinate in vertices[i]:
-            vector.append(coordinate)
-
-        vectors.append(vector)
-
-    return vectors
-
-def get_fov(vertices, face):
-
-    fov = []
-
-    print(face)
-    vectors = get_face(vertices,face)
-
-    for i in range(2):
-
-        angle = np.arccos(np.dot(vectors[i], vectors[i+1]) / (np.linalg.norm(vectors[i]) * np.linalg.norm(vectors[i+1])))
-
-        fov.append(angle)
-
-    return fov
 
 
 def get_faces(vertices):
@@ -123,6 +71,56 @@ def get_faces(vertices):
     return faces
 
 
+def get_face(vertices,face):
+
+    points = []
+    for i in face:
+        point = []
+        for coordinate in vertices[i]:
+            point.append(coordinate)
+
+        points.append(point)
+
+    return points
+
+
+def get_fov(vertices, face):
+
+    fov = []
+
+    vectors = get_face(vertices,face)
+
+    for i in range(2):
+
+        angle = 0.5* np.arccos(np.dot(vectors[i], vectors[i+1]) / (np.linalg.norm(vectors[i]) * np.linalg.norm(vectors[i+1])))
+
+        fov.append(angle)
+
+    return fov
+
+
+def get_dimensions(vertices, face):
+
+    vectors = get_face(vertices, face)
+
+    width = math.sqrt( ((vectors[0][0] - vectors[1][0])**2) + ((vectors[0][1] - vectors[1][1])**2) + ((vectors[0][2] - vectors[1][2])**2) )
+    height = math.sqrt( ((vectors[0][0] - vectors[3][0])**2) + ((vectors[0][1] - vectors[3][1])**2) + ((vectors[0][2] - vectors[3][2])**2) )
+
+    return width,height
+
+
+def get_center_offset(vertices):
+
+    floor = get_faces(vertices)[0]
+    points = get_face(vertices,floor)
+
+    x = [p[0] for p in points]
+    y = [p[1] for p in points]
+    offset = (-sum(x) / len(points), -sum(y) / len(points))
+
+    return offset
+
+
 def wall_orientation(wall, vertices, face):
 
     x1, y1, z1, x2, y2, z2 = get_coordinates(vertices, face)
@@ -151,8 +149,6 @@ def wall_orientation(wall, vertices, face):
 
     return wall
 
-#for i, face in enumerate(get_faces(vertices)):
-   #
 
 img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/45.png')
 file = open('../LayoutNet/result/res_panofull_ts_box_joint/box/45.txt','r')
@@ -160,9 +156,16 @@ file = open('../LayoutNet/result/res_panofull_ts_box_joint/box/45.txt','r')
 vertices = get_vertices(file)
 
 for i, face in enumerate(get_faces(vertices)):
-    print(get_fov(vertices, face))
     fov= get_fov(vertices, face)
-    #perspective_view(img, fov, height, width)
+    width , height = get_dimensions(vertices, face)
+    center = get_center_offset(vertices)
+    print(fov)
+    #print(width,height)
+    #print(center)
+    img = perspective_view(img, fov, int(100*width), int(100*height),[0.5,0.5],center)
+
+    plt.imshow(img)
+    plt.show()
 
 
 #fov = get_fov()
