@@ -24,7 +24,7 @@ def extrude(img, depth, blur=None):
             if pixel > 0.30*depth:
                 pixel = pixel - 0.30*depth + 1
             else:
-                pixel = 0
+                pixel = 1
 
             vertices = np.array([ \
                 [x, y, 0],
@@ -81,8 +81,9 @@ def preprocess(img, blur = None):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('assets/room3.jpg')
+    img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/3.jpg')
 
     mesh = extrude( img, 700, (2, 2))
 
     mesh.save('assets/room3.stl')
+

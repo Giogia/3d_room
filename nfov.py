@@ -105,7 +105,7 @@ def perspective_view(img, fov, height, width):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('assets/example.png')
+    img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/3.png')
 
     fov = [0.9, 0.9]
     height = 512

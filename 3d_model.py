@@ -5,7 +5,7 @@ from PIL import Image
 from nfov import *
 
 
-vertices = np.array([\
+vertices = np.array([
     [-1, -1, -1],
     [+76, -76, -56],
     [+76, +76, -56],
@@ -14,6 +14,22 @@ vertices = np.array([\
     [+76, -76, 56],
     [+76, +76, 56],
     [-76, +76, 56]])
+
+def get_vertices(file):
+
+    vertices = []
+
+    for line in file:
+
+        vertice = []
+
+        for coordinate in line.split():
+
+            vertice.append(float(coordinate))
+
+        vertices.append(vertice)
+
+    return vertices
 
 
 def translate(_solid, step, axis):
@@ -168,21 +184,27 @@ def wall_orientation(wall, vertices, face):
     #return room
 
 
-wall = mesh.Mesh.from_file('assets/room2.stl')
 
-room = mesh.Mesh(np.zeros(100, dtype=mesh.Mesh.dtype))
+file = open('../LayoutNet/result/res_panofull_ts_box_joint/box/45.txt','r')
 
-for i in range(5):
+vertices = get_vertices(file)
+print(vertices)
 
-    face = get_faces(vertices)[i]
+#wall = mesh.Mesh.from_file('assets/room2.stl')
 
-    print(face)
+#room = mesh.Mesh(np.zeros(100, dtype=mesh.Mesh.dtype))
 
-    twall = mesh.Mesh(wall.data.copy())
-    twall = wall_orientation(twall, vertices, face)
-    room = mesh.Mesh(np.concatenate([room.data] + [twall.data]))
+#for i in range(5):
 
-room.save('assets/2walls.stl')
+ #   face = get_faces(vertices)[i]
+
+  #  print(face)
+
+   # twall = mesh.Mesh(wall.data.copy())
+    #twall = wall_orientation(twall, vertices, face)
+    #room = mesh.Mesh(np.concatenate([room.data] + [twall.data]))
+
+#room.save('assets/2walls.stl')
 
 
 
