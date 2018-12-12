@@ -24,9 +24,9 @@ class NFOV():
         xx, yy = np.meshgrid(np.linspace(0, 1, self.width), np.linspace(0, 1, self.height))
         return np.array([xx.ravel(), yy.ravel()]).T
 
-    def _calcSphericaltoGnomonic(self, convertedScreenCoord):
-        x = convertedScreenCoord.T[0]
-        y = convertedScreenCoord.T[1]
+    def _calcSphericaltoGnomonic(self, convertedScreenCoord, center_point):
+        x = convertedScreenCoord.T[0] + center_point[0]
+        y = convertedScreenCoord.T[1] + center_point[1]
 
         rou = np.sqrt(x ** 2 + y ** 2)
         c = np.arctan(rou)
@@ -79,38 +79,42 @@ class NFOV():
 
         return nfov
 
-    def toNFOV(self, frame, center_point):
+    def toNFOV(self, frame, look_point, center_point):
         self.frame = frame
         self.frame_height = frame.shape[0]
         self.frame_width = frame.shape[1]
         self.frame_channel = frame.shape[2]
 
-        self.cp = self._get_coord_rad(center_point=center_point, isCenterPt=True)
+        self.cp = self._get_coord_rad(center_point=look_point, isCenterPt=True)
         convertedScreenCoord = self._get_coord_rad(isCenterPt=False)
-        spericalCoord = self._calcSphericaltoGnomonic(convertedScreenCoord)
-        return self._bilinear_interpolation(spericalCoord)
+        sphericalCoord = self._calcSphericaltoGnomonic(convertedScreenCoord, center_point)
+        return self._bilinear_interpolation(sphericalCoord)
 
 
-def perspective_view(img, fov, height, width):
+def perspective_view(img, fov, height, width, look_point, center_point):
 
     img = np.array(img)
     nfov = NFOV(fov, height, width)
-    center_point = np.array([0.25, 0.48])
-    img = nfov.toNFOV(img, center_point)
+    look_point = np.array(look_point)
+    center_point = np.array(center_point)
+    img = nfov.toNFOV(img, look_point, center_point)
 
     return img
 
 
 
+
 # test the class
+
 if __name__ == '__main__':
 
-    img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/3.png')
+    img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/45.png')
 
-    fov = [0.9, 0.9]
+    fov = [0.35, 0.5]
+    center = [0,0]
     height = 512
     width = 1024
-    img = perspective_view(img, fov, height, width)
+    img = perspective_view(img, fov, height, width, center)
 
     plt.imshow(img)
     plt.show()

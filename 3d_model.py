@@ -5,15 +5,15 @@ from PIL import Image
 from nfov import *
 
 
-vertices = np.array([
-    [-1, -1, -1],
-    [+76, -76, -56],
-    [+76, +76, -56],
-    [-76, +76, -56],
-    [-76, -76, 56],
-    [+76, -76, 56],
-    [+76, +76, 56],
-    [-76, +76, 56]])
+#vertices = np.array([
+   # [-1, -1, -1],
+  #  [+76, -76, -56],
+  #  [+76, +76, -56],
+   # [-76, +76, -56],
+   # [-76, -76, 56],
+   # [+76, -76, 56],
+  #  [+76, +76, 56],
+  #  [-76, +76, 56]])
 
 def get_vertices(file):
 
@@ -29,7 +29,13 @@ def get_vertices(file):
 
         vertices.append(vertice)
 
-    return vertices
+    for vertice in vertices:
+
+        for i in range(len(vertice)):
+
+            vertice[i] = vertice[i] / vertices[-1][2]
+
+    return np.array(vertices)
 
 
 def translate(_solid, step, axis):
@@ -59,47 +65,34 @@ def get_coordinates(vertices,face):
     return x1,y1,z1,x2,y2,z2
 
 
-#TODO TEST WITH DIFFERENT SHAPES
-def get_fov(vertices,face):
+def get_face(vertices,face):
+
+    vectors = []
+    for i in face:
+        vector = []
+        for coordinate in vertices[i]:
+            vector.append(coordinate)
+
+        vectors.append(vector)
+
+    return vectors
+
+def get_fov(vertices, face):
 
     fov = []
 
-    #distances are abs of coordinates
-    x1, y1, z1, x2, y2, z2 = map(abs, get_coordinates(vertices,face))
+    print(face)
+    vectors = get_face(vertices,face)
 
-    print(x1, y1, z1, x2, y2, z2)
+    for i in range(2):
 
-    if x1 > 0 and z2 > 0:
-        width = x1
-        height = z2
-        distance =  abs(vertices[face[0],1])
+        angle = np.arccos(np.dot(vectors[i], vectors[i+1]) / (np.linalg.norm(vectors[i]) * np.linalg.norm(vectors[i+1])))
 
-    if y1 > 0 and z2 > 0:
-        width = y1
-        height = z2
-        distance =  abs(vertices[face[0],0])
-
-    if x1 > 0 and z2 == 0:
-        width = x1
-        height = y2
-        distance = abs(vertices[face[0],2])
-
-    if y1 > 0 and z2 == 0:
-        width = y1
-        height = x2
-        distance = abs(vertices[face[0],2])
-
-    print(width,height,distance)
-
-    norm = 100
-
-    fov.append( np.degrees( np.arctan( width/(2*distance)))/norm)
-    fov.append( np.degrees( np.arctan( height/(2*distance)))/norm)
+        fov.append(angle)
 
     return fov
 
 
-#TODO TEST WITH L SHAPE
 def get_faces(vertices):
 
     faces = []
@@ -159,11 +152,20 @@ def wall_orientation(wall, vertices, face):
     return wall
 
 #for i, face in enumerate(get_faces(vertices)):
-   # print(get_fov(vertices,get_faces(vertices)[i]))
+   #
 
-#img = Image.open('assets/pano.png')
+img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/45.png')
+file = open('../LayoutNet/result/res_panofull_ts_box_joint/box/45.txt','r')
 
-#fov = [0.16, 0.3]
+vertices = get_vertices(file)
+
+for i, face in enumerate(get_faces(vertices)):
+    print(get_fov(vertices, face))
+    fov= get_fov(vertices, face)
+    #perspective_view(img, fov, height, width)
+
+
+#fov = get_fov()
 #height = 800
 #width = 800
 #img = perspective_view(img, fov, height, width)
@@ -184,11 +186,6 @@ def wall_orientation(wall, vertices, face):
     #return room
 
 
-
-file = open('../LayoutNet/result/res_panofull_ts_box_joint/box/45.txt','r')
-
-vertices = get_vertices(file)
-print(vertices)
 
 #wall = mesh.Mesh.from_file('assets/room2.stl')
 
