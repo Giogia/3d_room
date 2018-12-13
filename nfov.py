@@ -50,6 +50,9 @@ class NFOV():
         x2 = np.add(x0, np.ones(uf.shape).astype(int))  # coords of pixel to top right
         y2 = np.add(y0, np.ones(vf.shape).astype(int))
 
+        x2 = np.minimum(x2, self.frame_width - 1)
+        y2 = np.minimum(y2, self.frame_height - 1)
+
         base_y0 = np.multiply(y0, self.frame_width)
         base_y2 = np.multiply(y2, self.frame_width)
 
@@ -110,11 +113,12 @@ if __name__ == '__main__':
 
     img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/45.png')
 
-    fov = [0.35, 0.5]
+    fov = [0.5, 0.5]
+    look =[0.25,0.9]
     center = [0,0]
     height = 512
     width = 1024
-    img = perspective_view(img, fov, height, width, center)
+    img = perspective_view(img, fov, height, width, look, center)
 
     plt.imshow(img)
     plt.show()

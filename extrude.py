@@ -93,9 +93,9 @@ def preprocess(img, blur = None):
 if __name__ == '__main__':
 
     img = Image.open('assets/walld4.jpg')
+    img = img.resize((int(0.1*img.size[0]),int(0.1*img.size[1])), Image.BILINEAR)
 
-
-    mesh = extrude( img, 20)
+    mesh = extrude( img, 50)
 
     mesh.save('assets/wallm4.stl')
 
