@@ -92,10 +92,10 @@ def preprocess(img, blur = None):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('assets/walld1.jpg')
+    img = Image.open('assets/walld4.jpg')
 
 
-    mesh = extrude( img, 35)
+    mesh = extrude( img, 20)
 
-    mesh.save('assets/wall1.stl')
+    mesh.save('assets/wallm4.stl')
 
