@@ -21,8 +21,8 @@ def extrude(img, depth, blur=None):
 
             pixel = ((pixel - min) / (max - min)) * depth
 
-            if pixel > 0.30*depth:
-                pixel = pixel - 0.30*depth + 1
+            if pixel > 0.3*depth:
+                pixel = pixel - 0.3*depth + 1
             else:
                 pixel = 1
 
@@ -68,9 +68,20 @@ def extrude(img, depth, blur=None):
 
 def preprocess(img, blur = None):
 
-    img = cv2.bitwise_not(img)
+    #img = cv2.bitwise_not(img)
     gray_img = cv2.flip(img,0)
-    #gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+    clahe = cv2.createCLAHE(clipLimit=3, tileGridSize=(2, 2))
+
+    lab = cv2.cvtColor(gray_img, cv2.COLOR_BGR2LAB)  # convert from BGR to LAB color space
+    l, a, b = cv2.split(lab)  # split on 3 different channels
+
+    l2 = clahe.apply(l)  # apply CLAHE to the L-channel
+
+    lab = cv2.merge((l2, a, b))  # merge channels
+    gray_img = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)  # convert from LAB to BGR
+
+    gray_img = cv2.cvtColor(gray_img, cv2.COLOR_RGB2GRAY)
 
     if blur:
         img = cv2.blur(gray_img, blur)
@@ -81,9 +92,12 @@ def preprocess(img, blur = None):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/3.jpg')
+    img = Image.open('assets/room2.jpg')
 
-    mesh = extrude( img, 700, (2, 2))
+    #d = Image.open('assets/floor_d.png')
 
-    mesh.save('assets/room3.stl')
+
+    mesh = extrude( img, 100, (2,2))
+
+    mesh.save('assets/floor.stl')
 

@@ -33,7 +33,7 @@ def depth(img):
 
         depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
         depth = (depth * 255 / np.max(depth)).astype('uint8')
-        depth = Image.fromarray(depth).resize((1000,500), Image.NEAREST)
+        depth = Image.fromarray(depth).resize((img.size[0],img.size[1]), Image.BILINEAR)
 
     return depth
 
@@ -41,8 +41,8 @@ def depth(img):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('assets/room.jpg')
+    img = Image.open('assets/wall1.jpg')
     depth = depth(img)
-    depth.save('assets/room3.jpg')
+    depth.save('assets/floor_d.jpg')
 
 
