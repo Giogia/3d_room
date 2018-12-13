@@ -21,8 +21,8 @@ def extrude(img, depth, blur=None):
 
             pixel = ((pixel - min) / (max - min)) * depth
 
-            if pixel > 0.3*depth:
-                pixel = pixel - 0.3*depth + 1
+            if pixel > 0.1*depth:
+                pixel = pixel - 0.1*depth + 1
             else:
                 pixel = 1
 
@@ -71,7 +71,7 @@ def preprocess(img, blur = None):
     #img = cv2.bitwise_not(img)
     gray_img = cv2.flip(img,0)
 
-    clahe = cv2.createCLAHE(clipLimit=3, tileGridSize=(2, 2))
+    clahe = cv2.createCLAHE(clipLimit=5, tileGridSize=(1,1))
 
     lab = cv2.cvtColor(gray_img, cv2.COLOR_BGR2LAB)  # convert from BGR to LAB color space
     l, a, b = cv2.split(lab)  # split on 3 different channels
@@ -92,12 +92,10 @@ def preprocess(img, blur = None):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('assets/room2.jpg')
-
-    #d = Image.open('assets/floor_d.png')
+    img = Image.open('assets/walld1.jpg')
 
 
-    mesh = extrude( img, 100, (2,2))
+    mesh = extrude( img, 35)
 
-    mesh.save('assets/floor.stl')
+    mesh.save('assets/wall1.stl')
 

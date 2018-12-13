@@ -41,7 +41,7 @@ def depth(img):
 # test the class
 if __name__ == '__main__':
 
-    img = Image.open('assets/wall1.jpg')
+    img = Image.open('assets/result.jpg')
     depth = depth(img)
     depth.save('assets/floor_d.jpg')
 

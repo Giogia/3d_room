@@ -155,26 +155,25 @@ file = open('../LayoutNet/result/res_panofull_ts_box_joint/box/45.txt','r')
 
 vertices = get_vertices(file)
 
-face = get_faces(vertices)[4]
+face = get_faces(vertices)[0]
 fov= get_fov(vertices, face)
 width , height = get_dimensions(vertices, face)
 center = get_center_offset(vertices)
 print(fov)
 #print(width,height)
 #print(center)
-#img = perspective_view(img, [0.7,1.1], int(100*width), int(100*height),[0.255,1],[0.1,-0.35])
+img = perspective_view(img, [0.7,1.1], int(100*width), int(100*height),[0.255,1],[0.1,-0.35])
 #img = perspective_view(img, [0.5,0.9], int(100*width), int(100*height),[0,0.5],[0.35,0.1])
 #img = perspective_view(img, [0.23,0.4], int(100*width), int(100*height),[0.25,0.5],[0.15,0.1])
 #img = perspective_view(img, [0.35,0.4], int(100*width), int(100*height),[0.50,0.5],[-0.1,0.05])
-img = perspective_view(img, [0.32,0.5], int(100*width), int(100*height),[0.752,0.5],[-0.18,0.15])
+#img = perspective_view(img, [0.32,0.5], int(100*width), int(100*height),[0.752,0.5],[-0.18,0.15])
 
 
 plt.imshow(img)
 plt.show()
 img = Image.fromarray(img)
-img = img.resize((10*img.size[0],10*img.size[1]), Image.BILINEAR)
-print((10*img.size[0],10*img.size[1]))
-img.save('assets/result.png')
+#img = img.resize((10*img.size[0],10*img.size[1]), Image.BILINEAR)
+img.save('assets/result.jpg')
 
 #fov = get_fov()
 #height = 800
