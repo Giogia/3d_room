@@ -162,10 +162,10 @@ width , height = get_dimensions(vertices, face)
 #print(fov)
 print(width,height)
 #print(center)
-img = perspective_view(img, [0.4,1.5], int(2000*width), int(2000*height),[0.25,1],[0.7,0])
+img = perspective_view(img, [0.5,1.25], int(2000*width), int(2000*height),[0.255,1],[0.25,-0.5])
 #img = perspective_view(img, [0.55,0.75], int(2000*width), int(2000*height),[0,0.5],[0.35,0.1])
 #img = perspective_view(img, [0.3,0.45], int(2000*width), int(2000*height),[0.25,0.5],[0.15,0.05])
-#img = perspective_view(img, [0.4,0.55], int(2000*width), int(2000*height),[0.505,0.5],[-0.15,0.05])
+#img = perspective_view(img, [0.38,0.5], int(2000*width), int(2000*height),[0.502,0.5],[-0.15,0.05])
 #img = perspective_view(img, [0.4,0.55], int(2000*width), int(2000*height),[0.755,0.5],[-0.22,0.15])
 
 
