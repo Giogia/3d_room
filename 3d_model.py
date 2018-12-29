@@ -95,11 +95,23 @@ def get_medium_points(face, offset):
 
         #face[i][2] = 0
 
-        medium_point = 0.5*(np.array(face[i-1]) + np.array(face[i])) + np.array(offset)
+        medium_point = 0.5*(np.array(face[i-1]) + np.array(face[i])) - np.array(offset)
 
         medium_points.append(medium_point)
 
     return medium_points
+
+
+def get_orientation(face, center):
+
+    vector = get_medium_points(face, center)[1]
+    if vector[0] > 0:
+        angle = 0.5 / (1 + math.exp(-vector[1]/vector[0])) + 0.5
+
+    if vector[0] < 0:
+        angle = 0.5 / (1 + math.exp(-vector[1]/vector[0]))
+
+    return angle
 
 
 def get_fov(vertices, face, center):
@@ -112,7 +124,7 @@ def get_fov(vertices, face, center):
 
     for i in range(2):
 
-        angle = 0.4 * np.arccos(np.dot(vectors[i-1], vectors[i+1]) / (np.linalg.norm(vectors[i-1]) * np.linalg.norm(vectors[i+1])))
+        angle = 0.45 * np.arccos(np.dot(vectors[i-1], vectors[i+1]) / (np.linalg.norm(vectors[i-1]) * np.linalg.norm(vectors[i+1])))
 
         fov.append(angle)
 
@@ -141,14 +153,12 @@ def get_center_offset(vertices):
 
     x = [p[0] for p in points]
     y = [p[1] for p in points]
-    offset = (-sum(x) / len(points), -sum(y) / len(points), 0)
+    offset = (sum(x) / len(points), sum(y) / len(points), 0)
 
     return offset
 
 
 def wall_orientation(wall, vertices, face):
-
-    x1, y1, z1, x2, y2, z2 = get_coordinates(vertices, face)
 
     #cannot distinguish floor from ceiling, floor is transformed here
     if face[0] == 0 and face[2] == 2:
@@ -183,7 +193,7 @@ def get_files(filename):
     return img, txt
 
 
-for i in range(45,46):
+for i in range(4,46):
 
     img, txt = get_files(str(i))
     vertices = get_vertices(txt)
@@ -198,25 +208,32 @@ for i in range(45,46):
 
         width, height = get_dimensions(vertices, face)
 
+        orientation = get_orientation(get_face_vertices(vertices,face),center)
+
+        wall_center = get_medium_points(get_face_vertices(vertices,face), center)[1]
+
+        #normalization to 1
+        wall_center = (wall_center) / (max(wall_center) - min(wall_center))
+
+        #coordinates incompatibility
+        wall_center[0] = - wall_center[0]
+
+        offset = sum(np.array(center) * np.array(wall_center))
 
         if i == 0:
-            persp = perspective_view(img, fov, width, height, [0.5,1], center)
+            persp = perspective_view(img, fov, width, height, [orientation,1], center)
 
-        if 1 - 0.25 * i >= 0.5 and 1 - 0.25 * i < 1:
-            persp = perspective_view(img, fov, width, height, [1 - 0.25 * i, 0.5], [center[i%2],0])
-
-        if 1 - 0.25 * i < 0.5 :
-            persp = perspective_view(img, fov, width, height, [1 - 0.25 * i, 0.5], [-center[i % 2],0])
-
+        if i != 0:
+            persp = perspective_view(img, fov, width, height, [1 - orientation, 0.5], [offset,0])
 
         plt.imshow(persp)
         plt.show()
 
     #img = perspective_view(img, fov, width, height,[0.5,1], center) #[0.5,1.25]  #[0.25,-0.5]
     #img = perspective_view(img, fov, width, height,[0.755,0.5], [center[0],0]) #[0.4,0.55] #[-0.22,0.15]
-    #img = perspective_view(img, fov, width, height,[0.502,0.5],[center[1],0])  #[0.38,0.5] #[-0.15,0.05]
+    #img = perspective_view(img, fov, width, height,[0.502,0.5],[-center[1],0])  #[0.38,0.5] #[-0.15,0.05]
     #img = perspective_view(img, fov, width, height,[0.25,0.5],[-center[0],0])  #[0.3,0.45] #[0.15,0.05]
-    #img = perspective_view(img, fov, width, height,[0,0.5],[-center[1],0])  #[0.55,0.75] #[0.35,0.1]
+    #img = perspective_view(img, fov, width, height,[0,0.5],[center[1],0])  #[0.55,0.75] #[0.35,0.1]
 
 
 

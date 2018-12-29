@@ -25,7 +25,7 @@ class NFOV():
         return np.array([xx.ravel(), yy.ravel()]).T
 
     def _calcSphericaltoGnomonic(self, convertedScreenCoord, center_point):
-        x = convertedScreenCoord.T[0] - center_point[0]
+        x = convertedScreenCoord.T[0] + center_point[0]
         y = convertedScreenCoord.T[1] + center_point[1]
 
         rou = np.sqrt(x ** 2 + y ** 2)
