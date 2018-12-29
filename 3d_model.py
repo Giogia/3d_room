@@ -85,34 +85,34 @@ def get_face_vertices(vertices, face):
     return points
 
 
-def get_medium_points(face):
+def get_medium_points(face, offset):
 
     medium_points = []
 
     for i in range(len(face)):
 
-        face[i - 1][2] = 0
+        #face[i - 1][2] = 0
 
-        face[i][2] = 0
+        #face[i][2] = 0
 
-        medium_point = 0.5*(np.array(face[i-1]) + np.array(face[i]))
+        medium_point = 0.5*(np.array(face[i-1]) + np.array(face[i])) + np.array(offset)
 
         medium_points.append(medium_point)
 
     return medium_points
 
 
-def get_fov(vertices, face):
+def get_fov(vertices, face, center):
 
     fov = []
 
     face = get_face_vertices(vertices, face)
 
-    vectors = get_medium_points(face)
+    vectors = get_medium_points(face, center)
 
-    for i in range(1,3):
+    for i in range(2):
 
-        angle = 0.45 * np.arccos(np.dot(vectors[i-1], vectors[i+1]) / (np.linalg.norm(vectors[i-1]) * np.linalg.norm(vectors[i+1])))
+        angle = 0.4 * np.arccos(np.dot(vectors[i-1], vectors[i+1]) / (np.linalg.norm(vectors[i-1]) * np.linalg.norm(vectors[i+1])))
 
         fov.append(angle)
 
@@ -141,7 +141,7 @@ def get_center_offset(vertices):
 
     x = [p[0] for p in points]
     y = [p[1] for p in points]
-    offset = (sum(x) / len(points), -sum(y) / len(points))
+    offset = (-sum(x) / len(points), -sum(y) / len(points), 0)
 
     return offset
 
@@ -183,38 +183,46 @@ def get_files(filename):
     return img, txt
 
 
-for i in range(1,53):
+for i in range(45,46):
 
     img, txt = get_files(str(i))
     vertices = get_vertices(txt)
 
-    face = get_faces(vertices)[0]
+    for i in range(len(get_faces(vertices))):
 
-    print(face)
+        face = get_faces(vertices)[i]
 
-    fov= get_fov(vertices, face)
+        center = get_center_offset(vertices)
 
-    width, height = get_dimensions(vertices, face)
+        fov = get_fov(vertices, face, center)
 
-    print(fov)
-
-    print(width,height)
-
-    center = get_center_offset(vertices)
+        width, height = get_dimensions(vertices, face)
 
 
+        if i == 0:
+            persp = perspective_view(img, fov, width, height, [0.5,1], center)
 
-    img = perspective_view(img, fov, width, height,[0.5,1], center) #[0.5,1.25]  #[0.25,-0.5]
-    #img = perspective_view(img, fov, width, height,[0.755,0.5],[-0.22,0.15]) #[0.4,0.55]
-    #img = perspective_view(img, fov, width, height,[0.502,0.5],[-0.15,0.05])  #[0.38,0.5]
-    #img = perspective_view(img, fov, width, height,[0.25,0.5],[0.15,0.05])  #[0.3,0.45]
-    #img = perspective_view(img, fov, width, height,[0,0.5],[0.35,0.1])  #[0.55,0.75]
+        if 1 - 0.25 * i >= 0.5 and 1 - 0.25 * i < 1:
+            persp = perspective_view(img, fov, width, height, [1 - 0.25 * i, 0.5], [center[i%2],0])
+
+        if 1 - 0.25 * i < 0.5 :
+            persp = perspective_view(img, fov, width, height, [1 - 0.25 * i, 0.5], [-center[i % 2],0])
+
+
+        plt.imshow(persp)
+        plt.show()
+
+    #img = perspective_view(img, fov, width, height,[0.5,1], center) #[0.5,1.25]  #[0.25,-0.5]
+    #img = perspective_view(img, fov, width, height,[0.755,0.5], [center[0],0]) #[0.4,0.55] #[-0.22,0.15]
+    #img = perspective_view(img, fov, width, height,[0.502,0.5],[center[1],0])  #[0.38,0.5] #[-0.15,0.05]
+    #img = perspective_view(img, fov, width, height,[0.25,0.5],[-center[0],0])  #[0.3,0.45] #[0.15,0.05]
+    #img = perspective_view(img, fov, width, height,[0,0.5],[-center[1],0])  #[0.55,0.75] #[0.35,0.1]
 
 
 
 
-    plt.imshow(img)
-    plt.show()
+    #plt.imshow(img)
+    #plt.show()
     #img = Image.fromarray(img)
 
     #img = img.resize((10*img.size[0],10*img.size[1]), Image.BILINEAR)
