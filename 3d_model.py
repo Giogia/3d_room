@@ -34,6 +34,7 @@ def get_vertices(file):
 
     for vertice in vertices:
 
+
         for i in range(len(vertice)):
 
             vertice[i] = vertice[i] / vertices[-1][2]
@@ -71,7 +72,7 @@ def get_faces(vertices):
     return faces
 
 
-def get_face(vertices,face):
+def get_face_vertices(vertices, face):
 
     points = []
     for i in face:
@@ -84,15 +85,34 @@ def get_face(vertices,face):
     return points
 
 
+def get_medium_points(face):
+
+    medium_points = []
+
+    for i in range(len(face)):
+
+        face[i - 1][2] = 0
+
+        face[i][2] = 0
+
+        medium_point = 0.5*(np.array(face[i-1]) + np.array(face[i]))
+
+        medium_points.append(medium_point)
+
+    return medium_points
+
+
 def get_fov(vertices, face):
 
     fov = []
 
-    vectors = get_face(vertices,face)
+    face = get_face_vertices(vertices, face)
 
-    for i in range(2):
+    vectors = get_medium_points(face)
 
-        angle = 0.5 * np.arccos(np.dot(vectors[i], vectors[i+1]) / (np.linalg.norm(vectors[i]) * np.linalg.norm(vectors[i+1])))
+    for i in range(1,3):
+
+        angle = 0.45 * np.arccos(np.dot(vectors[i-1], vectors[i+1]) / (np.linalg.norm(vectors[i-1]) * np.linalg.norm(vectors[i+1])))
 
         fov.append(angle)
 
@@ -101,10 +121,15 @@ def get_fov(vertices, face):
 
 def get_dimensions(vertices, face):
 
-    vectors = get_face(vertices, face)
+    vectors = get_face_vertices(vertices, face)
 
     width = math.sqrt( ((vectors[0][0] - vectors[1][0])**2) + ((vectors[0][1] - vectors[1][1])**2) + ((vectors[0][2] - vectors[1][2])**2) )
     height = math.sqrt( ((vectors[0][0] - vectors[3][0])**2) + ((vectors[0][1] - vectors[3][1])**2) + ((vectors[0][2] - vectors[3][2])**2) )
+
+    resolution_constant = 2000
+
+    width = int(resolution_constant*width)
+    height = int(resolution_constant*height)
 
     return width,height
 
@@ -112,11 +137,11 @@ def get_dimensions(vertices, face):
 def get_center_offset(vertices):
 
     floor = get_faces(vertices)[0]
-    points = get_face(vertices,floor)
+    points = get_face_vertices(vertices, floor)
 
     x = [p[0] for p in points]
     y = [p[1] for p in points]
-    offset = (-sum(x) / len(points), -sum(y) / len(points))
+    offset = (sum(x) / len(points), -sum(y) / len(points))
 
     return offset
 
@@ -150,68 +175,54 @@ def wall_orientation(wall, vertices, face):
     return wall
 
 
-img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/45.png')
-file = open('../LayoutNet/result/res_panofull_ts_box_joint/box/45.txt','r')
+def get_files(filename):
 
-vertices = get_vertices(file)
+    img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/'+filename+'.png')
+    txt = open('../LayoutNet/result/res_panofull_ts_box_joint/box/'+filename+'.txt','r')
 
-face = get_faces(vertices)[0]
-#fov= get_fov(vertices, face)
-width , height = get_dimensions(vertices, face)
-#center = get_center_offset(vertices)
-#print(fov)
-print(width,height)
-#print(center)
-img = perspective_view(img, [0.5,1.25], int(2000*width), int(2000*height),[0.255,1],[0.25,-0.5])
-#img = perspective_view(img, [0.55,0.75], int(2000*width), int(2000*height),[0,0.5],[0.35,0.1])
-#img = perspective_view(img, [0.3,0.45], int(2000*width), int(2000*height),[0.25,0.5],[0.15,0.05])
-#img = perspective_view(img, [0.38,0.5], int(2000*width), int(2000*height),[0.502,0.5],[-0.15,0.05])
-#img = perspective_view(img, [0.4,0.55], int(2000*width), int(2000*height),[0.755,0.5],[-0.22,0.15])
+    return img, txt
 
 
-plt.imshow(img)
-plt.show()
-img = Image.fromarray(img)
-#img = img.resize((10*img.size[0],10*img.size[1]), Image.BILINEAR)
-img.save('assets/result.jpg')
+for i in range(1,53):
 
-#fov = get_fov()
-#height = 800
-#width = 800
-#img = perspective_view(img, fov, height, width)
+    img, txt = get_files(str(i))
+    vertices = get_vertices(txt)
 
-#plt.imshow(img)
-#plt.show()
-#img = Image.fromarray(img)
-#img.save('assets/result.png')
+    face = get_faces(vertices)[0]
 
-#def create_room(walls, vertices,position):
+    print(face)
 
-    #for i,wall in enumerate(walls):
+    fov= get_fov(vertices, face)
 
-        #translate(wall, , 'y')
+    width, height = get_dimensions(vertices, face)
 
-    #
+    print(fov)
 
-    #return room
+    print(width,height)
+
+    center = get_center_offset(vertices)
 
 
 
-#wall = mesh.Mesh.from_file('assets/room2.stl')
+    img = perspective_view(img, fov, width, height,[0.5,1], center) #[0.5,1.25]  #[0.25,-0.5]
+    #img = perspective_view(img, fov, width, height,[0.755,0.5],[-0.22,0.15]) #[0.4,0.55]
+    #img = perspective_view(img, fov, width, height,[0.502,0.5],[-0.15,0.05])  #[0.38,0.5]
+    #img = perspective_view(img, fov, width, height,[0.25,0.5],[0.15,0.05])  #[0.3,0.45]
+    #img = perspective_view(img, fov, width, height,[0,0.5],[0.35,0.1])  #[0.55,0.75]
 
-#room = mesh.Mesh(np.zeros(100, dtype=mesh.Mesh.dtype))
 
-#for i in range(5):
 
- #   face = get_faces(vertices)[i]
 
-  #  print(face)
+    plt.imshow(img)
+    plt.show()
+    #img = Image.fromarray(img)
 
-   # twall = mesh.Mesh(wall.data.copy())
-    #twall = wall_orientation(twall, vertices, face)
-    #room = mesh.Mesh(np.concatenate([room.data] + [twall.data]))
+    #img = img.resize((10*img.size[0],10*img.size[1]), Image.BILINEAR)
+    #img.save('assets/result.jpg')
 
-#room.save('assets/2walls.stl')
+
+
+
 
 
 
