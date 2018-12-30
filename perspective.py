@@ -114,7 +114,7 @@ if not os.path.isdir(path):
 
     os.mkdir(path)
 
-for i in range(45,46):
+for i in range(1,54):
 
     img = Image.open('../result/res_panofull_ts_box_joint/img/' + str(i) + '.png')
     txt = open('../result/res_panofull_ts_box_joint/box/' + str(i) + '.txt', 'r')
