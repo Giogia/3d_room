@@ -48,7 +48,7 @@ for i in range(1,54):
     for j in range(5):
 
         img = Image.open('../result/res_panofull_ts_box_joint/persp/' + str(i) + '-' + str(j) + '.png')
-        img = img.resize((int(0.9*img.size[0]),int(0.9*img.size[1])), Image.BILINEAR)
+        img = img.resize((int(0.8*img.size[0]),int(0.8*img.size[1])), Image.BILINEAR)
         depth = depth(img)
         depth.save('../result/res_panofull_ts_box_joint/depth/' + str(i) + '-' + str(j) + 'd.png')
 
