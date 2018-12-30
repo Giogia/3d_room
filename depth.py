@@ -20,14 +20,14 @@ def define_model():
 
 def depth(img):
     model = define_model()
-    model = torch.nn.DataParallel(model)#.cuda()
-    model.load_state_dict(torch.load('pretrained_model/model_senet', map_location={'cuda:0': 'cpu'}))
+    model = torch.nn.DataParallel(model).cuda()
+    model.load_state_dict(torch.load('pretrained_model/model_senet'))#, map_location={'cuda:0': 'cpu'}))
     model.eval()
 
     loader = depth_utils.load(img)
 
     for i, tensor in enumerate(loader):
-        tensor = torch.autograd.Variable(tensor)  # , volatile=True).cuda()
+        tensor = torch.autograd.Variable(tensor , volatile=True).cuda()
         depth = model(tensor)
 
         depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
@@ -43,7 +43,7 @@ if not os.path.isdir(path):
 
     os.mkdir(path)
 
-for i in range(1,54):
+for i in range(1,2):
 
     for j in range(5):
 
