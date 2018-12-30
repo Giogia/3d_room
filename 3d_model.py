@@ -189,13 +189,13 @@ def wall_orientation(wall, vertices, face):
 
 def get_files(filename):
 
-    img = Image.open('../LayoutNet/result/res_panofull_ts_box_joint/img/'+filename+'.png')
-    txt = open('../LayoutNet/result/res_panofull_ts_box_joint/box/'+filename+'.txt','r')
+    img = Image.open('../result/res_panofull_ts_box_joint/img/'+filename+'.png')
+    txt = open('../result/res_panofull_ts_box_joint/box/'+filename+'.txt','r')
 
     return img, txt
 
 
-for i in range(1,54):
+for i in range(1,2):
 
     img, txt = get_files(str(i))
     vertices = get_vertices(txt)
@@ -233,7 +233,7 @@ for i in range(1,54):
         print(i,j)
 
         persp = Image.fromarray(persp)
-        persp.save('../LayoutNet/result/res_panofull_ts_box_joint/persp/'+str(i)+'-'+str(j)+'.png')
+        persp.save('../result/res_panofull_ts_box_joint/persp/'+str(i)+'-'+str(j)+'.png')
 
 
 
