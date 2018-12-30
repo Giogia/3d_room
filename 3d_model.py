@@ -200,7 +200,7 @@ for i in range(1,54):
     img, txt = get_files(str(i))
     vertices = get_vertices(txt)
 
-    for j in range(1):#len(get_faces(vertices))):
+    for j in range(len(get_faces(vertices))):
 
         face = get_faces(vertices)[j]
 
