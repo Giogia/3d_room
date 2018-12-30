@@ -91,11 +91,7 @@ def get_medium_points(face, offset):
 
     for i in range(len(face)):
 
-        #face[i - 1][2] = 0
-
-        #face[i][2] = 0
-
-        medium_point = 0.5*(np.array(face[i-1]) + np.array(face[i])) - np.array(offset)
+        medium_point = 0.5*(np.array(face[i-1]) + np.array(face[i])) - np.array(offset) + 0.00000001
 
         medium_points.append(medium_point)
 
@@ -121,6 +117,12 @@ def get_fov(vertices, face, center):
     face = get_face_vertices(vertices, face)
 
     vectors = get_medium_points(face, center)
+
+    if all(vector[2] == 0.00000001 for vector in vectors):
+
+        for vector in vectors:
+
+            vector[2] = 0.5
 
     for i in range(2):
 
@@ -193,14 +195,14 @@ def get_files(filename):
     return img, txt
 
 
-for i in range(4,46):
+for i in range(1,54):
 
     img, txt = get_files(str(i))
     vertices = get_vertices(txt)
 
-    for i in range(len(get_faces(vertices))):
+    for j in range(1):#len(get_faces(vertices))):
 
-        face = get_faces(vertices)[i]
+        face = get_faces(vertices)[j]
 
         center = get_center_offset(vertices)
 
@@ -220,30 +222,18 @@ for i in range(4,46):
 
         offset = sum(np.array(center) * np.array(wall_center))
 
-        if i == 0:
+        if j == 0:
             persp = perspective_view(img, fov, width, height, [orientation,1], center)
 
-        if i != 0:
+        if j != 0:
             persp = perspective_view(img, fov, width, height, [1 - orientation, 0.5], [offset,0])
 
-        plt.imshow(persp)
-        plt.show()
+        #plt.imshow(persp)
+        #plt.show()
+        print(i,j)
 
-    #img = perspective_view(img, fov, width, height,[0.5,1], center) #[0.5,1.25]  #[0.25,-0.5]
-    #img = perspective_view(img, fov, width, height,[0.755,0.5], [center[0],0]) #[0.4,0.55] #[-0.22,0.15]
-    #img = perspective_view(img, fov, width, height,[0.502,0.5],[-center[1],0])  #[0.38,0.5] #[-0.15,0.05]
-    #img = perspective_view(img, fov, width, height,[0.25,0.5],[-center[0],0])  #[0.3,0.45] #[0.15,0.05]
-    #img = perspective_view(img, fov, width, height,[0,0.5],[center[1],0])  #[0.55,0.75] #[0.35,0.1]
-
-
-
-
-    #plt.imshow(img)
-    #plt.show()
-    #img = Image.fromarray(img)
-
-    #img = img.resize((10*img.size[0],10*img.size[1]), Image.BILINEAR)
-    #img.save('assets/result.jpg')
+        persp = Image.fromarray(persp)
+        persp.save('../LayoutNet/result/res_panofull_ts_box_joint/persp/'+str(i)+'-'+str(j)+'.png')
 
 
 

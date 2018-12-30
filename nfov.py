@@ -47,10 +47,10 @@ class NFOV():
 
         x0 = np.floor(uf).astype(int) # coord of pixel to bottom left
         y0 = np.floor(vf).astype(int)
-        x2 = np.add(x0, np.ones(uf.shape).astype(int))  # coords of pixel to top right
+        _x2 = np.add(x0, np.ones(uf.shape).astype(int))  # coords of pixel to top right
         y2 = np.add(y0, np.ones(vf.shape).astype(int))
 
-        x2 = np.minimum(x2, self.frame_width - 1)
+        x2 = np.mod(_x2, self.frame_width)
         y2 = np.minimum(y2, self.frame_height - 1)
 
         base_y0 = np.multiply(y0, self.frame_width)
@@ -68,8 +68,8 @@ class NFOV():
         C = np.take(flat_img, C_idx, axis=0)
         D = np.take(flat_img, D_idx, axis=0)
 
-        wa = np.multiply(x2 - uf, y2 - vf)
-        wb = np.multiply(x2 - uf, vf - y0)
+        wa = np.multiply(_x2 - uf, y2 - vf)
+        wb = np.multiply(_x2 - uf, vf - y0)
         wc = np.multiply(uf - x0, y2 - vf)
         wd = np.multiply(uf - x0, vf - y0)
 
