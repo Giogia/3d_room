@@ -3,6 +3,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from PIL import Image
+import os
 from utils import *
 
 
@@ -45,6 +46,13 @@ def wall_orientation(wall, vertices, face):
 
     return wall
 
+path = os.getcwd() + '/../result/res_panofull_ts_box_joint/mesh'
+
+if not os.path.isdir(path):
+
+    os.mkdir(path)
+
+for i in range(45,46)
 
 wall0 = mesh.Mesh.from_file('assets/wallm0t.stl')
 wall1 = mesh.Mesh.from_file('assets/wallm1t.stl')
