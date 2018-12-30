@@ -6,8 +6,7 @@ import numpy as np
 import depth_network
 from depth_model import Model, E_senet
 import depth_utils
-
-import matplotlib.image
+import os
 
 
 def define_model():
@@ -37,6 +36,12 @@ def depth(img):
 
     return depth
 
+
+path = os.getcwd() + '/../result/res_panofull_ts_box_joint/depth'
+
+if not os.path.isdir(path):
+
+    os.mkdir(path)
 
 for i in range(1,54):
 

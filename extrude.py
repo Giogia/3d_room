@@ -2,7 +2,9 @@ import numpy as np
 from stl import mesh
 from PIL import Image
 import cv2
+import os
 
+from utils import *
 
 def extrude(img, depth, blur=None):
 
@@ -89,18 +91,46 @@ def preprocess(img, blur = None):
     return gray_img
 
 
-# test the class
-for i in range(1,54):
+path = os.getcwd() + '/../result/res_panofull_ts_box_joint/walls'
+
+if not os.path.isdir(path):
+
+    os.mkdir(path)
+
+for i in range(45,46):
 
     for j in range(5):
 
-        img = Image.open('../result/res_panofull_ts_box_joint/persp/' + str(i) + '-' + str(j) + 'd.png')
+        img = Image.open('../result/res_panofull_ts_box_joint/depth/' + str(i) + '-' + str(j) + 'd.png')
+        txt = open('../result/res_panofull_ts_box_joint/box/' + str(i) + '.txt', 'r')
+
         img = img.resize((int(0.1 * img.size[0]), int(0.1 * img.size[1])), Image.BILINEAR)
+        vertices = get_vertices(txt)
 
+        if j == 0 :
 
-        mesh = extrude(img, 70, (1, 1))
+            depth = 50
 
-        mesh.save('../result/res_panofull_ts_box_joint/depth/' + str(i) + '-' + str(j) + 'm.png')
+        else :
+
+            floor = get_faces(vertices)[0]
+            wall = get_faces(vertices)[j]
+
+            if get_dimensions(vertices, wall)[0] == get_dimensions(vertices, floor)[0]:
+
+                depth = 0.01 * get_dimensions(vertices, floor)[1]
+
+            if get_dimensions(vertices, wall)[0] == get_dimensions(vertices, floor)[1]:
+
+                depth = 0.01 * get_dimensions(vertices, floor)[0]
+
+            else:
+
+                depth = 50
+
+        model = extrude(img, depth, (1, 1))
+
+        model.save('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-' + str(j) + 'm.stl')
 
     print(i)
 

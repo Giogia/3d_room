@@ -2,6 +2,7 @@ from math import pi
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
+import os
 
 from utils import *
 
@@ -107,12 +108,16 @@ def perspective_view(img, fov, width, height, look_point, center_point):
     return img
 
 
+path = os.getcwd() + '/../result/res_panofull_ts_box_joint/persp'
 
+if not os.path.isdir(path):
 
-for i in range(1, 54):
+    os.mkdir(path)
 
-    img = Image.open('../result/res_panofull_ts_box_joint/img/' + i + '.png')
-    txt = open('../result/res_panofull_ts_box_joint/box/' + i + '.txt', 'r')
+for i in range(1,2):
+
+    img = Image.open('../result/res_panofull_ts_box_joint/img/' + str(i) + '.png')
+    txt = open('../result/res_panofull_ts_box_joint/box/' + str(i) + '.txt', 'r')
 
     vertices = get_vertices(txt)
 
