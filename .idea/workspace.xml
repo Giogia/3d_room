@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9d5adfea-83b0-4254-b3d3-4af5e1514287" name="Default Changelist" comment="perspective images automatic">
-      <change afterPath="$PROJECT_DIR$/perspective.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/3d_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/3d_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/compose.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/depth.py" beforeDir="false" afterPath="$PROJECT_DIR$/depth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perspective.py" beforeDir="false" afterPath="$PROJECT_DIR$/perspective.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -85,14 +84,14 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="25" />
-          <entry key="py" value="15" />
+          <entry key="py" value="78" />
           <entry key="txt" value="29" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="54" />
-          <entry key="Python" value="15" />
+          <entry key="Python" value="78" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -112,8 +111,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perspective.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="538">
-              <caret line="204" lean-forward="true" selection-start-line="204" selection-end-line="204" />
+            <state relative-caret-position="291">
+              <caret line="151" column="80" lean-forward="true" selection-start-line="151" selection-start-column="10" selection-end-line="151" selection-end-column="80" />
               <folding>
                 <element signature="e#1#19#0" expanded="true" />
               </folding>
@@ -121,11 +120,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/3d_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="58">
-              <caret line="7" selection-start-line="7" selection-end-line="7" />
+            <state relative-caret-position="-2">
+              <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -133,11 +132,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/depth.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="403">
-              <caret line="38" selection-start-line="38" selection-end-line="38" />
+            <state relative-caret-position="585">
+              <caret line="48" column="4" selection-start-line="48" selection-start-column="4" selection-end-line="48" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -213,11 +212,12 @@
         <option value="$PROJECT_DIR$/assets/.gitignore" />
         <option value="$PROJECT_DIR$/prova.py" />
         <option value="$PROJECT_DIR$/depth_utils.py" />
-        <option value="$PROJECT_DIR$/depth.py" />
         <option value="$PROJECT_DIR$/extrude.py" />
         <option value="$PROJECT_DIR$/nfov.py" />
         <option value="$PROJECT_DIR$/compose.py" />
         <option value="$PROJECT_DIR$/3d_model.py" />
+        <option value="$PROJECT_DIR$/perspective.py" />
+        <option value="$PROJECT_DIR$/depth.py" />
       </list>
     </option>
   </component>
@@ -928,23 +928,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/extrude.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret lean-forward="true" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/depth.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="38" selection-start-line="38" selection-end-line="38" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/nfov.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1065">
@@ -955,23 +938,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/perspective.py">
+    <entry file="file://$PROJECT_DIR$/extrude.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="538">
-          <caret line="204" lean-forward="true" selection-start-line="204" selection-end-line="204" />
+        <state>
+          <caret lean-forward="true" />
           <folding>
-            <element signature="e#1#19#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/3d_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="58">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        <state relative-caret-position="-2">
+          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perspective.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="151" column="80" lean-forward="true" selection-start-line="151" selection-start-column="10" selection-end-line="151" selection-end-column="80" />
+          <folding>
+            <element signature="e#1#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/depth.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="585">
+          <caret line="48" column="4" selection-start-line="48" selection-start-column="4" selection-end-line="48" selection-end-column="4" />
         </state>
       </provider>
     </entry>

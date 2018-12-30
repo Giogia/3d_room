@@ -155,7 +155,7 @@ def get_files(filename):
     return img, txt
 
 
-for i in range(1,2):
+for i in range(1,54):
 
     img, txt = get_files(str(i))
     vertices = get_vertices(txt)
