@@ -42,9 +42,9 @@ for i in range(1,54):
 
     for j in range(5):
 
-        img = Image.open('../result/res_panofull_ts_box_joint/img/' + i + '-' + j + '.png')
+        img = Image.open('../result/res_panofull_ts_box_joint/img/' + str(i) + '-' + str(j) + '.png')
         depth = depth(img)
-        depth.save('../result/res_panofull_ts_box_joint/depth/' + i + '-' + j + 'd.png')
+        depth.save('../result/res_panofull_ts_box_joint/depth/' + str(i) + '-' + str(j) + 'd.png')
 
     print(i)
 
