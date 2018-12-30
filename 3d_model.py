@@ -28,33 +28,6 @@ def translate(_solid, step, axis):
 
 
 
-
-def wall_orientation(wall, vertices, face):
-
-    #cannot distinguish floor from ceiling, floor is transformed here
-    if face[0] == 0 and face[2] == 2:
-        print("floor")
-        wall.rotate([1,0,0], math.radians(90))
-
-        translate(wall, -vertices[face[1], 0], 'x')
-        translate(wall, -vertices[face[1], 1], 'z')
-        translate(wall, vertices[face[1], 2], 'y')
-
-    else:
-        wall.rotate([0.0, -np.sign(y1), 0.0], math.radians(90))
-        wall.rotate([0.0, np.sign(x1)-1, 0.0], math.radians(180))
-        wall.rotate([np.sign(x2)+np.sign(y2),0.0, 0.0], math.radians(90))
-
-        translate(wall, -vertices[face[0],0], 'x')
-        translate(wall, -vertices[face[0],1], 'y')
-        translate(wall, vertices[face[0],2], 'z')
-
-    print(vertices[face[1],0])
-    print(vertices[face[1],1])
-    print(vertices[face[1],2])
-
-    return wall
-
 path = os.getcwd() + '/../result/res_panofull_ts_box_joint/mesh'
 
 if not os.path.isdir(path):
@@ -69,22 +42,30 @@ for i in range(45,46):
 
     room = mesh.Mesh.from_file('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-0m.stl')
     room.rotate([1, 0, 0], math.radians(90))
-    face = get_face_vertices(vertices,get_faces(vertices)[0])[0]
+
+    face = get_face_vertices(vertices,get_faces(vertices)[0])
+    face_base = face[0]
     resolution_constant = 200
+
+    room.rotate([0.0, 1.0, 0.0], -get_angle(np.array(face[1])-np.array(face[0])))
 
     for n in range(2):
 
-        translate(room, resolution_constant*face[n], n)
+        translate(room, resolution_constant*face_base[n], n)
 
     for j in range(1,5):
 
-        face = get_face_vertices(vertices, get_faces(vertices)[j])[0]
+        face = get_face_vertices(vertices, get_faces(vertices)[j])
+        face_base = face[1]
 
         wall = mesh.Mesh.from_file('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-' + str(j) + 'm.stl')
 
+        wall.rotate([0.0, 1.0, 0.0], -get_angle(np.array(face[0])-np.array(face[1])))
+        print(get_angle(np.array(face[0])-np.array(face[1])))
+
         for n in range(2):
 
-            translate(wall, resolution_constant * face[n], n)
+            translate(wall, resolution_constant * face_base[n], n)
 
         room = mesh.Mesh(np.concatenate([room.data] + [wall.data]))
 
