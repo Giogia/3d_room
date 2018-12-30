@@ -28,8 +28,8 @@ class NFOV():
         return np.array([xx.ravel(), yy.ravel()]).T
 
     def _calcSphericaltoGnomonic(self, convertedScreenCoord, center_point):
-        x = convertedScreenCoord.T[0] + center_point[0]
-        y = convertedScreenCoord.T[1] + center_point[1]
+        x = convertedScreenCoord.T[0] - center_point[0]
+        y = convertedScreenCoord.T[1] - center_point[1]
 
         rou = np.sqrt(x ** 2 + y ** 2)
         c = np.arctan(rou)
@@ -114,7 +114,7 @@ if not os.path.isdir(path):
 
     os.mkdir(path)
 
-for i in range(1,2):
+for i in range(45,46):
 
     img = Image.open('../result/res_panofull_ts_box_joint/img/' + str(i) + '.png')
     txt = open('../result/res_panofull_ts_box_joint/box/' + str(i) + '.txt', 'r')
@@ -132,14 +132,15 @@ for i in range(1,2):
         width, height = get_dimensions(vertices, face)
 
         orientation = get_orientation(get_face_vertices(vertices, face), center)
+        print(orientation)
 
         wall_center = get_medium_points(get_face_vertices(vertices, face), center)[1]
 
         # normalization to 1
         wall_center = (wall_center) / (max(wall_center) - min(wall_center))
 
-        # coordinates incompatibility
-        wall_center[0] = - wall_center[0]
+        # axis incongruence
+        wall_center[1]= -wall_center[1]
 
         offset = sum(np.array(center) * np.array(wall_center))
 
@@ -147,13 +148,13 @@ for i in range(1,2):
             persp = perspective_view(img, fov, width, height, [orientation, 1], center)
 
         if j != 0:
-            persp = perspective_view(img, fov, width, height, [1 - orientation, 0.5], [offset, 0])
+            persp = perspective_view(img, fov, width, height, [orientation, 0.5], [offset, 0])
 
-        # plt.imshow(persp)
-        # plt.show()
+        plt.imshow(persp)
+        plt.show()
 
-        persp = Image.fromarray(persp)
-        persp.save('../result/res_panofull_ts_box_joint/persp/' + str(i) + '-' + str(j) + '.png')
+        #persp = Image.fromarray(persp)
+        #persp.save('../result/res_panofull_ts_box_joint/persp/' + str(i) + '-' + str(j) + '.png')
 
     print(i)
 

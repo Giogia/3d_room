@@ -8,16 +8,25 @@ from utils import *
 
 
 def translate(_solid, step, axis):
-    if 'x' == axis:
+    if 0 == axis:
+
         items = 0, 3, 6
-    elif 'y' == axis:
+        _solid.points[:, items] += step
+
+    elif 1 == axis:
+
         items = 2, 5, 8
-    elif 'z' == axis:
+        _solid.points[:, items] -= step
+
+    elif 2 == axis:
+
         items = 1, 4, 7
+        _solid.points[:, items] += step
+
     else:
         raise RuntimeError('Unknown axis %r, expected x, y or z' % axis)
 
-    _solid.points[:, items] += step
+
 
 
 def wall_orientation(wall, vertices, face):
@@ -52,14 +61,31 @@ if not os.path.isdir(path):
 
     os.mkdir(path)
 
-for i in range(45,46)
 
-wall0 = mesh.Mesh.from_file('assets/wallm0t.stl')
-wall1 = mesh.Mesh.from_file('assets/wallm1t.stl')
-wall2 = mesh.Mesh.from_file('assets/wallm2t.stl')
-wall3 = mesh.Mesh.from_file('assets/wallm3t.stl')
-wall4 = mesh.Mesh.from_file('assets/wallm4t.stl')
+for i in range(45,46):
 
-room = mesh.Mesh(np.concatenate([wall0.data] + [wall1.data] + [wall2.data] + [wall3.data] + [wall4.data]))
+    txt = open('../result/res_panofull_ts_box_joint/box/' + str(i) + '.txt', 'r')
+    vertices = get_vertices(txt)
 
-room.save('assets/room.stl')
+    room = mesh.Mesh.from_file('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-0m.stl')
+    room.rotate([1, 0, 0], math.radians(90))
+    face = get_face_vertices(vertices,get_faces(vertices)[0])[0]
+    resolution_constant = 200
+
+    for n in range(2):
+
+        translate(room, resolution_constant*face[n], n)
+
+    for j in range(1,5):
+
+        face = get_face_vertices(vertices, get_faces(vertices)[j])[0]
+
+        wall = mesh.Mesh.from_file('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-' + str(j) + 'm.stl')
+
+        for n in range(2):
+
+            translate(wall, resolution_constant * face[n], n)
+
+        room = mesh.Mesh(np.concatenate([room.data] + [wall.data]))
+
+    room.save('../result/res_panofull_ts_box_joint/mesh/' + str(i) + '.stl')

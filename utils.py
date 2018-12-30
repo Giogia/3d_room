@@ -85,10 +85,10 @@ def get_orientation(face, center):
 
     vector = get_medium_points(face, center)[1]
     if vector[0] > 0:
-        angle = 0.5 / (1 + math.exp(-vector[1]/vector[0])) + 0.5
+        angle = 0.5 - 0.5 / (1 + math.exp(-vector[1]/vector[0]))
 
     if vector[0] < 0:
-        angle = 0.5 / (1 + math.exp(-vector[1]/vector[0]))
+        angle = 1 - 0.5 / (1 + math.exp(-vector[1]/vector[0]))
 
     return angle
 
