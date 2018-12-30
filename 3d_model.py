@@ -3,16 +3,16 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from PIL import Image
-from nfov import *
+from utils import *
 
 
 def translate(_solid, step, axis):
     if 'x' == axis:
         items = 0, 3, 6
     elif 'y' == axis:
-        items = 1, 4, 7
-    elif 'z' == axis:
         items = 2, 5, 8
+    elif 'z' == axis:
+        items = 1, 4, 7
     else:
         raise RuntimeError('Unknown axis %r, expected x, y or z' % axis)
 
@@ -36,8 +36,8 @@ def wall_orientation(wall, vertices, face):
         wall.rotate([np.sign(x2)+np.sign(y2),0.0, 0.0], math.radians(90))
 
         translate(wall, -vertices[face[0],0], 'x')
-        translate(wall, -vertices[face[0],1], 'z')
-        translate(wall, vertices[face[0],2], 'y')
+        translate(wall, -vertices[face[0],1], 'y')
+        translate(wall, vertices[face[0],2], 'z')
 
     print(vertices[face[1],0])
     print(vertices[face[1],1])

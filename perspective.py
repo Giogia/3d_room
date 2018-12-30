@@ -1,163 +1,119 @@
+from math import pi
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 from PIL import Image
-from nfov import *
 
+from utils import *
+
+class NFOV():
+    def __init__(self, fov, height, width):
+        self.FOV = fov
+        self.PI = pi
+        self.PI_2 = pi * 0.5
+        self.PI2 = pi * 2.0
+        self.height = height
+        self.width = width
+        self.screen_points = self._get_screen_img()
 
-def get_vertices(file):
+    def _get_coord_rad(self, isCenterPt, center_point=None):
+        return (center_point * 2 - 1) * np.array([self.PI, self.PI_2]) \
+            if isCenterPt \
+            else \
+            (self.screen_points * 2 - 1) * np.array([self.PI, self.PI_2]) * (
+                np.ones(self.screen_points.shape) * self.FOV)
 
-    vertices = []
+    def _get_screen_img(self):
+        xx, yy = np.meshgrid(np.linspace(0, 1, self.width), np.linspace(0, 1, self.height))
+        return np.array([xx.ravel(), yy.ravel()]).T
 
-    for line in file:
+    def _calcSphericaltoGnomonic(self, convertedScreenCoord, center_point):
+        x = convertedScreenCoord.T[0] + center_point[0]
+        y = convertedScreenCoord.T[1] + center_point[1]
 
-        vertice = []
+        rou = np.sqrt(x ** 2 + y ** 2)
+        c = np.arctan(rou)
+        sin_c = np.sin(c)
+        cos_c = np.cos(c)
 
-        for coordinate in line.split():
+        lat = np.arcsin(cos_c * np.sin(self.cp[1]) + (y * sin_c * np.cos(self.cp[1])) / rou)
+        lon = self.cp[0] + np.arctan2(x * sin_c, rou * np.cos(self.cp[1]) * cos_c - y * np.sin(self.cp[1]) * sin_c)
 
-            vertice.append(float(coordinate))
+        lat = (lat / self.PI_2 + 1.) * 0.5
+        lon = (lon / self.PI + 1.) * 0.5
 
-        vertices.append(vertice)
+        return np.array([lon, lat]).T
 
-    for vertice in vertices:
+    def _bilinear_interpolation(self, screen_coord):
+        uf = np.mod(screen_coord.T[0],1) * self.frame_width  # long - width
+        vf = np.mod(screen_coord.T[1],1) * self.frame_height  # lat - height
 
+        x0 = np.floor(uf).astype(int) # coord of pixel to bottom left
+        y0 = np.floor(vf).astype(int)
+        _x2 = np.add(x0, np.ones(uf.shape).astype(int))  # coords of pixel to top right
+        y2 = np.add(y0, np.ones(vf.shape).astype(int))
 
-        for i in range(len(vertice)):
+        x2 = np.mod(_x2, self.frame_width)
+        y2 = np.minimum(y2, self.frame_height - 1)
 
-            vertice[i] = vertice[i] / vertices[-1][2]
+        base_y0 = np.multiply(y0, self.frame_width)
+        base_y2 = np.multiply(y2, self.frame_width)
 
-    return np.array(vertices)
+        A_idx = np.add(base_y0, x0)
+        B_idx = np.add(base_y2, x0)
+        C_idx = np.add(base_y0, x2)
+        D_idx = np.add(base_y2, x2)
 
+        flat_img = np.reshape(self.frame, [-1, self.frame_channel])
 
-def get_faces(vertices):
+        A = np.take(flat_img, A_idx, axis=0)
+        B = np.take(flat_img, B_idx, axis=0)
+        C = np.take(flat_img, C_idx, axis=0)
+        D = np.take(flat_img, D_idx, axis=0)
 
-    faces = []
+        wa = np.multiply(_x2 - uf, y2 - vf)
+        wb = np.multiply(_x2 - uf, vf - y0)
+        wc = np.multiply(uf - x0, y2 - vf)
+        wd = np.multiply(uf - x0, vf - y0)
 
-    floor = []
-    ceiling = []
-    up = False
+        # interpolate
+        AA = np.multiply(A, np.array([wa, wa, wa]).T)
+        BB = np.multiply(B, np.array([wb, wb, wb]).T)
+        CC = np.multiply(C, np.array([wc, wc, wc]).T)
+        DD = np.multiply(D, np.array([wd, wd, wd]).T)
+        nfov = np.reshape(np.round(AA + BB + CC + DD).astype(np.uint8), [self.height, self.width, 3])
 
-    for i in range(len(vertices)-1):
+        return nfov
 
-        if up == False:
-            floor.append(i)
+    def toNFOV(self, frame, look_point, center_point):
+        self.frame = frame
+        self.frame_height = frame.shape[0]
+        self.frame_width = frame.shape[1]
+        self.frame_channel = frame.shape[2]
 
-        if vertices[i+1][2] - vertices[i][2] != 0:
-            up = True
+        self.cp = self._get_coord_rad(center_point=look_point, isCenterPt=True)
+        convertedScreenCoord = self._get_coord_rad(isCenterPt=False)
+        sphericalCoord = self._calcSphericaltoGnomonic(convertedScreenCoord, center_point)
+        return self._bilinear_interpolation(sphericalCoord)
 
-        if up == True:
-            ceiling.append(i+1)
 
-    faces.append(floor)
+def perspective_view(img, fov, width, height, look_point, center_point):
 
-    for i in floor:
+    img = np.array(img)
+    nfov = NFOV(fov, height, width)
+    look_point = np.array(look_point)
+    center_point = np.array(center_point)
+    img = nfov.toNFOV(img, look_point, center_point)
 
-        faces.append((floor[i-1],floor[i],ceiling[i],ceiling[i-1]))
+    return img
 
-    #faces.append(ceiling)
 
-    return faces
 
 
-def get_face_vertices(vertices, face):
+for i in range(1, 54):
 
-    points = []
-    for i in face:
-        point = []
-        for coordinate in vertices[i]:
-            point.append(coordinate)
+    img = Image.open('../result/res_panofull_ts_box_joint/img/' + i + '.png')
+    txt = open('../result/res_panofull_ts_box_joint/box/' + i + '.txt', 'r')
 
-        points.append(point)
-
-    return points
-
-
-def get_medium_points(face, offset):
-
-    medium_points = []
-
-    for i in range(len(face)):
-
-        medium_point = 0.5*(np.array(face[i-1]) + np.array(face[i])) - np.array(offset) + 0.00000001
-
-        medium_points.append(medium_point)
-
-    return medium_points
-
-
-def get_orientation(face, center):
-
-    vector = get_medium_points(face, center)[1]
-    if vector[0] > 0:
-        angle = 0.5 / (1 + math.exp(-vector[1]/vector[0])) + 0.5
-
-    if vector[0] < 0:
-        angle = 0.5 / (1 + math.exp(-vector[1]/vector[0]))
-
-    return angle
-
-
-def get_fov(vertices, face, center):
-
-    fov = []
-
-    face = get_face_vertices(vertices, face)
-
-    vectors = get_medium_points(face, center)
-
-    if all(vector[2] == 0.00000001 for vector in vectors):
-
-        for vector in vectors:
-
-            vector[2] = 0.5
-
-    for i in range(2):
-
-        angle = 0.45 * np.arccos(np.dot(vectors[i-1], vectors[i+1]) / (np.linalg.norm(vectors[i-1]) * np.linalg.norm(vectors[i+1])))
-
-        fov.append(angle)
-
-    return fov
-
-
-def get_dimensions(vertices, face):
-
-    vectors = get_face_vertices(vertices, face)
-
-    width = math.sqrt( ((vectors[0][0] - vectors[1][0])**2) + ((vectors[0][1] - vectors[1][1])**2) + ((vectors[0][2] - vectors[1][2])**2) )
-    height = math.sqrt( ((vectors[0][0] - vectors[3][0])**2) + ((vectors[0][1] - vectors[3][1])**2) + ((vectors[0][2] - vectors[3][2])**2) )
-
-    resolution_constant = 2000
-
-    width = int(resolution_constant*width)
-    height = int(resolution_constant*height)
-
-    return width,height
-
-
-def get_center_offset(vertices):
-
-    floor = get_faces(vertices)[0]
-    points = get_face_vertices(vertices, floor)
-
-    x = [p[0] for p in points]
-    y = [p[1] for p in points]
-    offset = (sum(x) / len(points), sum(y) / len(points), 0)
-
-    return offset
-
-
-def get_files(filename):
-
-    img = Image.open('../result/res_panofull_ts_box_joint/img/'+filename+'.png')
-    txt = open('../result/res_panofull_ts_box_joint/box/'+filename+'.txt','r')
-
-    return img, txt
-
-
-for i in range(1,54):
-
-    img, txt = get_files(str(i))
     vertices = get_vertices(txt)
 
     for j in range(len(get_faces(vertices))):
@@ -170,36 +126,29 @@ for i in range(1,54):
 
         width, height = get_dimensions(vertices, face)
 
-        orientation = get_orientation(get_face_vertices(vertices,face),center)
+        orientation = get_orientation(get_face_vertices(vertices, face), center)
 
-        wall_center = get_medium_points(get_face_vertices(vertices,face), center)[1]
+        wall_center = get_medium_points(get_face_vertices(vertices, face), center)[1]
 
-        #normalization to 1
+        # normalization to 1
         wall_center = (wall_center) / (max(wall_center) - min(wall_center))
 
-        #coordinates incompatibility
+        # coordinates incompatibility
         wall_center[0] = - wall_center[0]
 
         offset = sum(np.array(center) * np.array(wall_center))
 
         if j == 0:
-            persp = perspective_view(img, fov, width, height, [orientation,1], center)
+            persp = perspective_view(img, fov, width, height, [orientation, 1], center)
 
         if j != 0:
-            persp = perspective_view(img, fov, width, height, [1 - orientation, 0.5], [offset,0])
+            persp = perspective_view(img, fov, width, height, [1 - orientation, 0.5], [offset, 0])
 
-        #plt.imshow(persp)
-        #plt.show()
+        # plt.imshow(persp)
+        # plt.show()
 
         persp = Image.fromarray(persp)
-        persp.save('../result/res_panofull_ts_box_joint/persp/'+str(i)+'-'+str(j)+'.png')
+        persp.save('../result/res_panofull_ts_box_joint/persp/' + str(i) + '-' + str(j) + '.png')
 
     print(i)
-
-
-
-
-
-
-
 

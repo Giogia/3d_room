@@ -3,8 +3,8 @@ import torch.nn.parallel
 from PIL import Image
 import numpy as np
 
-import network
-from model import Model, E_senet
+import depth_network
+from depth_model import Model, E_senet
 import depth_utils
 
 import matplotlib.image
@@ -12,7 +12,7 @@ import matplotlib.image
 
 def define_model():
 
-    original_model = network.senet154(pretrained='imagenet')
+    original_model = depth_network.senet154(pretrained='imagenet')
     encoder = E_senet(original_model)
     model = Model(encoder, num_features=2048, block_channel = [256, 512, 1024, 2048])
 

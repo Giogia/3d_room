@@ -90,12 +90,20 @@ def preprocess(img, blur = None):
 
 
 # test the class
-if __name__ == '__main__':
+for i in range(1,54):
 
-    img = Image.open('assets/walld3.jpg')
-    img = img.resize((int(0.1*img.size[0]),int(0.1*img.size[1])), Image.BILINEAR)
+    for j in range(5):
 
-    mesh = extrude( img, 70 , (1,1))
+        img = Image.open('../result/res_panofull_ts_box_joint/persp/' + str(i) + '-' + str(j) + 'd.png')
+        img = img.resize((int(0.1 * img.size[0]), int(0.1 * img.size[1])), Image.BILINEAR)
 
-    mesh.save('assets/wallm3.stl')
+
+        mesh = extrude(img, 70, (1, 1))
+
+        mesh.save('../result/res_panofull_ts_box_joint/depth/' + str(i) + '-' + str(j) + 'm.png')
+
+    print(i)
+
+
+
 
