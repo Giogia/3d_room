@@ -27,7 +27,7 @@ def depth(img):
     loader = depth_utils.load(img)
 
     for i, tensor in enumerate(loader):
-        tensor = torch.autograd.Variable(tensor , volatile=True).cuda()
+        tensor = torch.autograd.Variable(tensor).cuda()
         depth = model(tensor)
 
         depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
