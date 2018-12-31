@@ -70,11 +70,12 @@ def extrude(img, depth, blur=None):
 
 def preprocess(img, blur = None):
 
-    #img = cv2.bitwise_not(img)
+    img = cv2.bitwise_not(img)
     gray_img = cv2.flip(img,0)
 
     clahe = cv2.createCLAHE(clipLimit=5, tileGridSize=(1,1))
 
+    gray_img = cv2.cvtColor(gray_img, cv2.COLOR_GRAY2BGR)
     lab = cv2.cvtColor(gray_img, cv2.COLOR_BGR2LAB)  # convert from BGR to LAB color space
     l, a, b = cv2.split(lab)  # split on 3 different channels
 

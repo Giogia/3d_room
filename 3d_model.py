@@ -61,7 +61,6 @@ for i in range(1,54):
         wall = mesh.Mesh.from_file('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-' + str(j) + 'm.stl')
 
         wall.rotate([0.0, 1.0, 0.0], -get_angle(np.array(face[0])-np.array(face[1])))
-        print(get_angle(np.array(face[0])-np.array(face[1])))
 
         for n in range(2):
 
