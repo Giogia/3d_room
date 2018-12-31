@@ -20,7 +20,7 @@ def define_model():
 
 def depth(img):
     model = define_model()
-    model = torch.nn.DataParallel(model).cuda()
+    model = torch.nn.DataParallel(model,output_device=1).cuda()
     model.load_state_dict(torch.load('pretrained_model/model_senet'))#, map_location={'cuda:0': 'cpu'}))
     model.eval()
 
@@ -33,7 +33,7 @@ def depth(img):
 
             tensor = torch.autograd.Variable(tensor).cuda()
 
-            depth = model(tensor)
+        depth = model(tensor)
 
         depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
         depth = (depth * 255 / np.max(depth)).astype('uint8')
