@@ -21,7 +21,7 @@ def define_model():
 def depth(img):
     model = define_model()
     model = torch.nn.DataParallel(model)#.cuda()
-    model.load_state_dict(torch.load('pretrained_model/model_senet'))#, map_location={'cuda:0': 'cpu'}))
+    model.load_state_dict(torch.load('pretrained_model/model_senet', map_location={'cuda:0': 'cpu'}))
     model.eval()
 
     loader = depth_utils.load(img)
