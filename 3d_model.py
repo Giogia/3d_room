@@ -69,3 +69,5 @@ for i in range(1,54):
         room = mesh.Mesh(np.concatenate([room.data] + [wall.data]))
 
     room.save('../result/res_panofull_ts_box_joint/mesh/' + str(i) + '.stl')
+
+    print(i)
