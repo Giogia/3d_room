@@ -20,24 +20,26 @@ def define_model():
 
 def depth(img):
     model = define_model()
-    model = torch.nn.DataParallel(model)#.cuda()
-    model.load_state_dict(torch.load('pretrained_model/model_senet', map_location={'cuda:0': 'cpu'}))
+    model = torch.nn.DataParallel(model).cuda()
+    model.load_state_dict(torch.load('pretrained_model/model_senet'))#, map_location={'cuda:0': 'cpu'}))
     model.eval()
 
     loader = depth_utils.load(img)
 
-    with torch.no_grad():
-        for i, tensor in enumerate(loader):
 
-            #tensor = torch.autograd.Variable(tensor, volatile= True).cuda()
+    for i, tensor in enumerate(loader):
+
+        with torch.no_grad():
+
+            tensor = torch.autograd.Variable(tensor).cuda()
 
             depth = model(tensor)
 
-            depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
-            depth = (depth * 255 / np.max(depth)).astype('uint8')
-            depth = Image.fromarray(depth).resize((img.size[0],img.size[1]), Image.BILINEAR)
+        depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
+        depth = (depth * 255 / np.max(depth)).astype('uint8')
+        depth = Image.fromarray(depth).resize((img.size[0],img.size[1]), Image.BILINEAR)
 
-        return depth
+    return depth
 
 
 path = os.getcwd() + '/../result/res_panofull_ts_box_joint/depth'
