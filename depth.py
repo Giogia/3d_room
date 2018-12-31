@@ -33,7 +33,7 @@ def depth(img):
 
             tensor = torch.autograd.Variable(tensor).cuda()
 
-        depth = model(tensor, output_device=1)
+        depth = model(tensor).cuda()
 
         depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
         depth = (depth * 255 / np.max(depth)).astype('uint8')
