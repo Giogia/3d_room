@@ -48,7 +48,7 @@ if not os.path.isdir(path):
 
     os.mkdir(path)
 
-torch.cuda.device(0)
+#torch.cuda.device(0)
 
 for i in range(1,54):
 

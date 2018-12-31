@@ -13,8 +13,8 @@ def load(img):
 
     dataset = depthDataset(img,
                                transform=transforms.Compose([
-                                   Scale([640, 480]),
-                                   CenterCrop([608, 456]),
+                                   Scale([320, 240]),
+                                   CenterCrop([304, 228]),
                                    ToTensor(),
                                    Normalize(__imagenet_stats['mean'],
                                              __imagenet_stats['std'])
