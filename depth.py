@@ -28,7 +28,7 @@ def depth(img):
 
     for i, tensor in enumerate(loader):
 
-        tensor = torch.autograd.Variable(tensor, Volatile= True).cuda()
+        tensor = torch.autograd.Variable(tensor, volatile= True).cuda()
 
         depth = model(tensor)
 
