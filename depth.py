@@ -26,17 +26,18 @@ def depth(img):
 
     loader = depth_utils.load(img)
 
-    for i, tensor in enumerate(loader):
+    with torch.no_grad():
+        for i, tensor in enumerate(loader):
 
-        tensor = torch.autograd.Variable(tensor, volatile= True).cuda()
+            #tensor = torch.autograd.Variable(tensor, volatile= True).cuda()
 
-        depth = model(tensor)
+            depth = model(tensor)
 
-        depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
-        depth = (depth * 255 / np.max(depth)).astype('uint8')
-        depth = Image.fromarray(depth).resize((img.size[0],img.size[1]), Image.BILINEAR)
+            depth = depth.view(depth.size(2),depth.size(3)).data.cpu().numpy()
+            depth = (depth * 255 / np.max(depth)).astype('uint8')
+            depth = Image.fromarray(depth).resize((img.size[0],img.size[1]), Image.BILINEAR)
 
-    return depth
+        return depth
 
 
 path = os.getcwd() + '/../result/res_panofull_ts_box_joint/depth'
