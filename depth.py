@@ -20,7 +20,7 @@ def define_model():
 
 def depth(img):
     model = define_model()
-    model = torch.nn.DataParallel(model,output_device=0).cuda()
+    model = torch.nn.DataParallel(model).cuda()
     model.load_state_dict(torch.load('pretrained_model/model_senet'))#, map_location={'cuda:0': 'cpu'}))
     model.eval()
 
@@ -47,6 +47,8 @@ path = os.getcwd() + '/../result/res_panofull_ts_box_joint/depth'
 if not os.path.isdir(path):
 
     os.mkdir(path)
+
+torch.cuda.device(0)
 
 for i in range(1,54):
 
