@@ -28,7 +28,7 @@ def translate(_solid, step, axis):
 
 
 
-path = os.getcwd() + '/../result/res_panofull_ts_box_joint/mesh'
+path = os.getcwd() + '/../result/mesh'
 
 if not os.path.isdir(path):
 
@@ -37,10 +37,10 @@ if not os.path.isdir(path):
 
 for i in range(1,54):
 
-    txt = open('../result/res_panofull_ts_box_joint/box/' + str(i) + '.txt', 'r')
+    txt = open('../result/box/' + str(i) + '.txt', 'r')
     vertices = get_vertices(txt)
 
-    room = mesh.Mesh.from_file('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-0m.stl')
+    room = mesh.Mesh.from_file('../result/walls/' + str(i) + '-0m.stl')
     room.rotate([1, 0, 0], math.radians(90))
 
     face = get_face_vertices(vertices,get_faces(vertices)[0])
@@ -58,7 +58,7 @@ for i in range(1,54):
         face = get_face_vertices(vertices, get_faces(vertices)[j])
         face_base = face[1]
 
-        wall = mesh.Mesh.from_file('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-' + str(j) + 'm.stl')
+        wall = mesh.Mesh.from_file('../result/walls/' + str(i) + '-' + str(j) + 'm.stl')
 
         wall.rotate([0.0, 1.0, 0.0], -get_angle(np.array(face[0])-np.array(face[1])))
 
@@ -68,6 +68,6 @@ for i in range(1,54):
 
         room = mesh.Mesh(np.concatenate([room.data] + [wall.data]))
 
-    room.save('../result/res_panofull_ts_box_joint/mesh/' + str(i) + '.stl')
+    room.save('../result/mesh/' + str(i) + '.stl')
 
     print(i)

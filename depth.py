@@ -42,7 +42,7 @@ def depth(img):
     return depth
 
 
-path = os.getcwd() + '/../result/res_panofull_ts_box_joint/depth'
+path = os.getcwd() + '/../result/depth'
 
 if not os.path.isdir(path):
 
@@ -53,9 +53,9 @@ for i in range(1,54):
 
     for j in range(5):
 
-        img = Image.open('../result/res_panofull_ts_box_joint/persp/' + str(i) + '-' + str(j) + '.png')
+        img = Image.open('../result/persp/' + str(i) + '-' + str(j) + '.png')
         depth_map = depth(img)
-        depth_map.save('../result/res_panofull_ts_box_joint/depth/' + str(i) + '-' + str(j) + 'd.png')
+        depth_map.save('../result/depth/' + str(i) + '-' + str(j) + 'd.png')
 
     print(i)
 

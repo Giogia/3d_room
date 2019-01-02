@@ -108,7 +108,7 @@ def perspective_view(img, fov, width, height, look_point, center_point):
     return img
 
 
-path = os.getcwd() + '/../result/res_panofull_ts_box_joint/persp'
+path = os.getcwd() + '/../result/persp'
 
 if not os.path.isdir(path):
 
@@ -116,8 +116,8 @@ if not os.path.isdir(path):
 
 for i in range(1,54):
 
-    img = Image.open('../result/res_panofull_ts_box_joint/img/' + str(i) + '.png')
-    txt = open('../result/res_panofull_ts_box_joint/box/' + str(i) + '.txt', 'r')
+    img = Image.open('../result/img/' + str(i) + '.png')
+    txt = open('../result/box/' + str(i) + '.txt', 'r')
 
     vertices = get_vertices(txt)
 
@@ -149,11 +149,11 @@ for i in range(1,54):
         if j != 0:
             persp = perspective_view(img, fov, width, height, [orientation, 0.5], [offset, 0])
 
-        plt.imshow(persp)
-        plt.show()
+        #plt.imshow(persp)
+        #plt.show()
 
         persp = Image.fromarray(persp)
-        persp.save('../result/res_panofull_ts_box_joint/persp/' + str(i) + '-' + str(j) + '.png')
+        persp.save('../result/persp/' + str(i) + '-' + str(j) + '.png')
 
     print(i)
 

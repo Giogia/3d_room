@@ -92,7 +92,7 @@ def preprocess(img, blur = None):
     return gray_img
 
 
-path = os.getcwd() + '/../result/res_panofull_ts_box_joint/walls'
+path = os.getcwd() + '/../result/walls'
 
 if not os.path.isdir(path):
 
@@ -102,8 +102,8 @@ for i in range(1,54):
 
     for j in range(5):
 
-        img = Image.open('../result/res_panofull_ts_box_joint/depth/' + str(i) + '-' + str(j) + 'd.png')
-        txt = open('../result/res_panofull_ts_box_joint/box/' + str(i) + '.txt', 'r')
+        img = Image.open('../result/depth/' + str(i) + '-' + str(j) + 'd.png')
+        txt = open('../result/box/' + str(i) + '.txt', 'r')
 
         img = img.resize((int(0.1 * img.size[0]), int(0.1 * img.size[1])), Image.BILINEAR)
         vertices = get_vertices(txt)
@@ -131,7 +131,7 @@ for i in range(1,54):
 
         model = extrude(img, depth, (1, 1))
 
-        model.save('../result/res_panofull_ts_box_joint/walls/' + str(i) + '-' + str(j) + 'm.stl')
+        model.save('../result/walls/' + str(i) + '-' + str(j) + 'm.stl')
 
     print(i)
 
