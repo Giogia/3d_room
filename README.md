@@ -1,1 +1,1 @@
-3d_room
+Computer Animation and Data Visualization project 2019
